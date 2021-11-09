@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "keythereum": "^1.2.0",
+    "web3": "^1.6.0",
+    "web3js-quorum": "^21.7.0-rc1"
+  }
+}

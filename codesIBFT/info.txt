@@ -1,0 +1,2 @@
+INFO [10-07|11:14:54.343] Administering Ethereum network           name=lpoatest
+WARN [10-07|11:14:54.343] No previous configurations found         path=/home/bencq/.puppeth/lpoatest

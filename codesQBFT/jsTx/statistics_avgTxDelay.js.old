@@ -1,0 +1,155 @@
+const path = require('path');
+const net = require('net');
+const Web3 = require('web3');
+const fs = require('fs');
+const config = require('./config');
+
+
+
+var txCnt = config.txCnt;
+var oneBatch = config.oneBatch;
+var batchCnt = parseInt(txCnt / oneBatch);
+
+
+
+var senderArr;
+var parseSenders = ()=>{
+    var senders = fs.readFileSync(path.join(__dirname, "senders.txt")).toString().split('\n');
+    senders.forEach((str, ind, arr)=>{arr[ind] = arr[ind].split(' ');});
+    if(senders.length > 0 && senders[senders.length - 1].length != 2)
+    {
+        senders.pop();
+    }
+    console.log(senders);
+    senderArr = senders;
+
+}
+
+var recvArr = [];
+var parseRecvTsLog = ()=>{
+    let recvTsLogFile = path.resolve(__dirname, "rec", "recvTs.log")
+    let data = fs.readFileSync(recvTsLogFile).toString();
+    let lines = data.split('\n');
+
+    for(let ind in lines)
+    {
+        if(lines[ind] == "")
+            continue;
+        let items = lines[ind].split(',');
+        if(items.length != 3)
+            continue;
+        let from = items[0];
+        let nonce = parseInt(items[1]);
+        let timestamp = parseInt(items[2]); // unit: second
+        recvArr.push([from, nonce, timestamp]);
+    }
+};
+
+var sendArr = [];
+var parseSendTsLog = ()=>{
+    let sendTsLogFile = path.resolve(__dirname, "rec", "sendTs.log")
+    let data = fs.readFileSync(sendTsLogFile).toString();
+    let lines = data.split('\n');
+
+    for(let ind in lines)
+    {
+        if(lines[ind] == "")
+            continue;
+        let items = lines[ind].split(',');
+        if(items.length != 2)
+            continue;
+        let sendTxCnt = parseInt(items[0]);
+        let timestamp = parseInt(items[1]); // unit: millisecond
+        sendArr.push([sendTxCnt, timestamp]);
+    }
+};
+
+var sender2nonce2tsArr = new Map();
+var txDelayArr = [];
+var analysis = ()=>{
+    let from2Ind = new Map();
+    for(let ind = 0; ind < senderArr.length; ind++)
+    {
+        let sender = senderArr[ind][0];
+        sender2nonce2tsArr.set(sender, new Map());
+    }
+    totTxInd = 0;
+    for(let ind = 0; ind < sendArr.length; ind++)
+    {
+        let sendTxCnt = sendArr[ind][0];
+        let sendTimeStamp = sendArr[ind][1] / 1000;
+        let nxtTotTxInd = totTxInd + sendTxCnt;
+        for(let txInd = totTxInd; txInd < nxtTotTxInd; txInd++)
+        {
+            let batchInd = parseInt(txInd / oneBatch);
+            let txIndInBatch = txInd % oneBatch;
+            let senderInd = batchInd % senderArr.length;
+            let sender = senderArr[senderInd][0]
+            let nonce = parseInt(batchInd / senderArr.length) * oneBatch + txIndInBatch;
+            if(sender2nonce2tsArr.has(sender))
+            {
+                let nonce2tsArr = sender2nonce2tsArr.get(sender);
+                if(nonce2tsArr.has(nonce))
+                {
+                    console.error("err sender has nonce already", sender, nonce);
+                }
+                else
+                {
+                    nonce2tsArr.set(nonce, sendTimeStamp);
+                }
+            }
+            else
+            {
+                console.error("err sender not exists", sender);
+            }
+        }
+        totTxInd = nxtTotTxInd;
+    }
+
+    
+    for(let ind = 0; ind < recvArr.length; ind++)
+    {
+        let from = recvArr[ind][0];
+        let noPrefixFrom = from.substring(2);
+        let nonce = recvArr[ind][1];
+        let recvTimeStamp = recvArr[ind][2];
+        if(sender2nonce2tsArr.has(noPrefixFrom))
+        {
+            let nonce2tsArr = sender2nonce2tsArr.get(noPrefixFrom);
+            if(!nonce2tsArr.has(nonce))
+            {
+                console.error("err from has not nonce", noPrefixFrom, nonce);
+            }
+            else
+            {
+                let sendTimeStamp = nonce2tsArr.get(nonce);
+                let txDelay = recvTimeStamp - sendTimeStamp;
+                txDelayArr.push(txDelay);
+            }
+        }
+        else
+        {
+            console.error("err from not exists", noPrefixFrom);
+        }
+    }
+
+    let sumDelay = 0;
+    let maxDelay = 0;
+    let minDelay = Infinity;
+    for(let txDelay of txDelayArr)
+    {
+        sumDelay += txDelay;
+        maxDelay = Math.max(maxDelay, txDelay);
+        minDelay = Math.min(minDelay, txDelay);
+    }
+    let avgTxDelay = sumDelay / txDelayArr.length;
+    console.log("txDelayArr length:", txDelayArr.length);
+    console.log("avg txDelay:", avgTxDelay, "maxDelay:", maxDelay, "minDelay:", minDelay);
+
+};
+
+parseSenders();
+parseRecvTsLog();
+parseSendTsLog();
+analysis();
+

@@ -1,0 +1,3 @@
+export PORT="30304"
+export RAFTPORT="50000"
+export NETWORKID="666667"

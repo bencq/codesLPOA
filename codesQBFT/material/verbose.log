@@ -1,0 +1,66 @@
+validators
+{
+	"Address": "0xe788a519aaa063a61a2744b75d2084c24abfc41e",
+	"Nodekey": "12b1faec44f304d7e0bd27d1dd8cc23f1bd7a4e7877b23c999633bb9c1a03c5e",
+	"NodeInfo": "enode://bccdc44f9384a69ca880478dec0444b3da209bfc16e37169fddd97edb89af3cfdb0163ff67bd3f87d43da8414c353ba381da39d84b16d18e50d1df8d3eaae734@0.0.0.0:30304?discport=0"
+}
+{
+	"Address": "0xbb92aa92acc14852534df55cf6fb3f00465dd3f5",
+	"Nodekey": "63282ee552d6ee1a44a3e6e35be4023949a1bf4ab192d157413a4e13c082d505",
+	"NodeInfo": "enode://4b8f41829e38e0a40097c9d11b50da68d790da5793f97677d9427cf79e4831862f8b1cc2fea533c560d8d8f12c5e8838d080a5ff4b7c6287a48e21afd95e404c@0.0.0.0:30304?discport=0"
+}
+
+
+
+static-nodes.json
+[
+	"enode://bccdc44f9384a69ca880478dec0444b3da209bfc16e37169fddd97edb89af3cfdb0163ff67bd3f87d43da8414c353ba381da39d84b16d18e50d1df8d3eaae734@0.0.0.0:30304?discport=0",
+	"enode://4b8f41829e38e0a40097c9d11b50da68d790da5793f97677d9427cf79e4831862f8b1cc2fea533c560d8d8f12c5e8838d080a5ff4b7c6287a48e21afd95e404c@0.0.0.0:30304?discport=0"
+]
+
+
+
+genesis.json
+{
+    "config": {
+        "chainId": 10,
+        "homesteadBlock": 0,
+        "eip150Block": 0,
+        "eip150Hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "eip155Block": 0,
+        "eip158Block": 0,
+        "byzantiumBlock": 0,
+        "constantinopleBlock": 0,
+        "petersburgBlock": 0,
+        "istanbulBlock": 0,
+        "istanbul": {
+            "epoch": 30000,
+            "policy": 0,
+            "ceil2Nby3Block": 0,
+            "testQBFTBlock": 0
+        },
+        "txnSizeLimit": 64,
+        "maxCodeSize": 0,
+        "qip714Block": 0,
+        "isMPS": false,
+        "isQuorum": true
+    },
+    "nonce": "0x0",
+    "timestamp": "0x618a63ea",
+    "extraData": "0xf84fa00000000000000000000000000000000000000000000000000000000000000000ea94e788a519aaa063a61a2744b75d2084c24abfc41e94bb92aa92acc14852534df55cf6fb3f00465dd3f5c080c0",
+    "gasLimit": "0xe0000000",
+    "difficulty": "0x1",
+    "mixHash": "0x63746963616c2062797a616e74696e65206661756c7420746f6c6572616e6365",
+    "coinbase": "0x0000000000000000000000000000000000000000",
+    "alloc": {
+        "bb92aa92acc14852534df55cf6fb3f00465dd3f5": {
+            "balance": "0x446c3b15f9926687d2c40534fdb564000000000000"
+        },
+        "e788a519aaa063a61a2744b75d2084c24abfc41e": {
+            "balance": "0x446c3b15f9926687d2c40534fdb564000000000000"
+        }
+    },
+    "number": "0x0",
+    "gasUsed": "0x0",
+    "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+}
