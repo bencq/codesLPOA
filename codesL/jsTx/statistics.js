@@ -182,7 +182,7 @@ var func = ()=>{
         return avg;
     })(chainSideRates));
     console.log("tps", ((validDuration)=>{
-        let tps = config.txCnt / validDuration;
+        let tps = recvTxArr.length / validDuration;
         return tps;
     })(validDuration));
 }
